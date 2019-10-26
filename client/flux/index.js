@@ -13,6 +13,7 @@ export default function createStore(initialState = {}) {
       isMobile: false,
       data: {},
       map: [],
+      components: [],
       ...initialState
     }),
     actions,
