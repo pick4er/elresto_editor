@@ -1,11 +1,10 @@
 
 export default {
-  name: 'catalog-page',
+  name: 'main-page',
   render(h) {
     return h(
       'div',
       [
-        'Catalog',
         h('base-button-moscow'),
       ],
     )

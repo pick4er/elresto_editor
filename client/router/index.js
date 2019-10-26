@@ -3,9 +3,9 @@ import Router from 'vue-router';
 
 Vue.use(Router);
 
-const CatalogPage = () => import(
-  /* webpackChunkName: "CatalogPage" */
-  'client/pages/CatalogPage'
+const MainPage = () => import(
+  /* webpackChunkName: "MainPage" */
+  'client/pages/MainPage'
 );
 
 export default function createRouter() {
@@ -25,7 +25,7 @@ export default function createRouter() {
     routes: [
       {
         path: '*',
-        component: CatalogPage,
+        component: MainPage,
         props: true,
       },
     ],
