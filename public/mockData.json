@@ -1,0 +1,18 @@
+{ 
+  "base-button-moscow_1": { 
+    "data": { 
+      "title": 'Moscow-1' 
+    }, 
+    "style": { 
+      "color": 'red' 
+    } 
+  }, 
+  "base-button-moscow_2": { 
+    "data": { 
+      "title": 'Moscow-2' 
+    }, 
+    "style": { 
+      "color": 'blue' 
+    } 
+  } 
+}

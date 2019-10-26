@@ -1,11 +1,14 @@
-import createApp from 'client/app.js';
+import { createApp, createStore, createRouter } from 'client/app';
 
 import 'client/styles/app.styl';
 
-const { app, router, store } = createApp();
+const router = createRouter()
+const store = createStore()
+let app;
 
 if (window.__INITIAL_STATE__) {
   store.replaceState(window.__INITIAL_STATE__);
+  app = createApp(store, router)
 }
 
 router.onReady(() => {

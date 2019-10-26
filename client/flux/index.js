@@ -11,6 +11,8 @@ export default function createStore(initialState = {}) {
   return new Vuex.Store({
     state: () => ({
       isMobile: false,
+      data: {},
+      map: [],
       ...initialState
     }),
     actions,

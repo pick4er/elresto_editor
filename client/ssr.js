@@ -1,8 +1,16 @@
-import createApp from 'client/app';
+import { createApp, createStore, createRouter } from 'client/app';
 
 export default context => new Promise((resolve, reject) => {
-  const initialState = { isMobile: context.isMobile };
-  const { app, router, store } = createApp(initialState);
+  const initialState = { 
+    isMobile: context.isMobile, 
+    data: context.data, 
+    map: context.map,
+    components: context.components,
+  };
+
+  const router = createRouter()
+  const store = createStore(initialState)
+  const app = createApp(store, router, initialState)
 
   router.push(context.url);
   router.onReady(() => {

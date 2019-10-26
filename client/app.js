@@ -4,19 +4,40 @@ import App from 'client/App.vue';
 import createRouter from 'client/router';
 import createStore from 'client/flux';
 
-export default function createApp(initialState) {
-  const store = createStore(initialState);
-  const router = createRouter();
+const BaseButtonMoscow = () => import(
+  /* webpackChunkName: "BaseButtonMoscow" */
+  'client/components/BaseButtonMoscow'
+);
 
-  const app = new Vue({
+const BaseButtonLondon = () => import(
+  /* webpackChunkName: "BaseButtonLondon" */
+  'client/components/BaseButtonLondon'
+);
+
+const globalComponents = {
+  BaseButtonLondon,
+  BaseButtonMoscow,
+}
+
+function registerComponents(components) {
+  for (let i = 0; i < components.length; i += 1) {
+    const [tagName, componentName] = components[i]
+    Vue.component(tagName, globalComponents[componentName])
+  }
+}
+
+function createApp(store, router, initialState) {
+  registerComponents(store.state.components)
+
+  return new Vue({
     store,
     router,
     render: h => h(App),
   });
+}
 
-  return {
-    app,
-    store,
-    router,
-  };
+export {
+  createRouter,
+  createStore,
+  createApp
 }
