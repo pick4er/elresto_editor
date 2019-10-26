@@ -1,9 +1,6 @@
 {
   "map": [
-    ["base-button-london_1", "BaseButtonLondon"], 
-    ["base-button-moscow_1", "BaseButtonMoscow"],
-    ["base-button-moscow_3", "BaseButtonMoscow"],
-    ["base-button-london_2", "BaseButtonLondon"],
-    ["base-button-moscow_4", "BaseButtonMoscow"]
+    ["base-button_1", "BaseButton"],
+    ["base-button_2", "BaseButton"]
   ]
 }

@@ -4,19 +4,13 @@ import App from 'client/App.vue';
 import createRouter from 'client/router';
 import createStore from 'client/flux';
 
-const BaseButtonMoscow = () => import(
-  /* webpackChunkName: "BaseButtonMoscow" */
-  'client/components/BaseButtonMoscow'
-);
-
-const BaseButtonLondon = () => import(
-  /* webpackChunkName: "BaseButtonLondon" */
-  'client/components/BaseButtonLondon'
+const BaseButton = () => import(
+  /* webpackChunkName: "BaseButton" */
+  'client/components/BaseButton'
 );
 
 const globalComponents = {
-  BaseButtonLondon,
-  BaseButtonMoscow,
+  BaseButton,
 }
 
 function registerComponents(components) {

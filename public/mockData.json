@@ -1,18 +1,18 @@
 { 
-  "base-button-moscow_1": { 
-    "data": { 
-      "title": 'Moscow-1' 
+  "base-button_1": { 
+    "props": { 
+      "title": "Moscow-1" 
     }, 
     "style": { 
-      "color": 'red' 
+      "color": "red" 
     } 
   }, 
-  "base-button-moscow_2": { 
-    "data": { 
-      "title": 'Moscow-2' 
+  "base-button_2": { 
+    "props": { 
+      "title": "Moscow-2" 
     }, 
     "style": { 
-      "color": 'blue' 
+      "color": "blue" 
     } 
   } 
 }

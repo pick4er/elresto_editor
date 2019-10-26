@@ -35,10 +35,21 @@ function getMap() {
   return map;
 }
 
+function getData() {
+  const rawData = fs.readFileSync(
+    path.join(process.cwd(), 'public', 'mockData.json'),
+    { encoding: 'utf-8' },
+  );
+  const parsedData = JSON.parse(rawData);
+
+  return parsedData;
+}
+
 async function prerender(ctx) {
   const { isMobile = false } = ctx.userAgent;
 
   const map = getMap();
+  const data = getData();
   const componentsToRegister = getComponentsFromMap(map);
 
   const context = {
@@ -46,6 +57,7 @@ async function prerender(ctx) {
     isMobile,
     layout: isMobile ? 'mobile' : 'desktop',
     map,
+    data,
     components: componentsToRegister,
   };
 
