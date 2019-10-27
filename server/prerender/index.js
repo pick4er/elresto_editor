@@ -67,6 +67,7 @@ async function prerender(ctx) {
     map,
     data,
     components,
+    isEdit: true,
   };
 
   const html = await renderer.renderToString(context)

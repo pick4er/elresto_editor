@@ -14,6 +14,7 @@ export default function createStore(initialState = {}) {
       data: {},
       map: [],
       components: [],
+      isEdit: null,
       ...initialState
     }),
     actions,

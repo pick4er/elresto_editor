@@ -14,15 +14,9 @@ const BaseBlock = () => import(
   'client/components/BaseBlock'
 );
 
-const SiteInput = () => import(
-  /* webpackChunkName: "SiteInput" */
-  'client/components/SiteInput'
-);
-
 const globalComponents = {
   BaseButton,
   BaseBlock,
-  SiteInput,
 }
 
 function registerComponents(components) {
