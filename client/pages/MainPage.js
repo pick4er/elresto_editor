@@ -3,13 +3,6 @@ import parseMapField from 'helpers/parseMapField'
 
 export default {
   name: 'main-page',
-  mounted() {
-    setTimeout(() => {
-      this.$store.dispatch({
-        type: 'UPDATE_COLOR'
-      })
-    }, 3000)
-  },
   computed: {
     map() {
       return this.$store.state.map
@@ -17,28 +10,19 @@ export default {
     data() {
       return this.$store.state.data
     },
-    tags() {
-      const tags = []
-
-      for (let i = 0; i < this.map.length; i += 1) {
-        const { preciseTag } = parseMapField(this.map[i])
-        const { commonTagName } = parsePreciseTag(preciseTag)
-        const tagData = this.data[preciseTag]
-
-        tags.push([commonTagName, tagData])
-      }
-
-      return tags
-    },
   },
   methods: {
-    getRenderedTags(h) {
+    getRenderedTags(tags, h) {
       const renderedTags = []
 
-      for (let i = 0; i < this.tags.length; i += 1) {
-        const tagName = this.tags[i][0]
-        const tagData = JSON.parse(JSON.stringify(this.tags[i][1]))
-        renderedTags.push(h(tagName, tagData))
+      for (let i = 0; i < tags.length; i += 1) {
+        const { preciseTag, children = [] } = parseMapField(tags[i])
+        const { commonTagName } = parsePreciseTag(preciseTag)
+        const tagData = JSON.parse(JSON.stringify(this.data[preciseTag] || {}))
+
+        const renderedChildren = this.getRenderedTags(children, h)
+
+        renderedTags.push(h(commonTagName, tagData, renderedChildren))
       }
 
       return renderedTags
@@ -47,7 +31,7 @@ export default {
   render(h) {
     return h(
       'div',
-      [...this.getRenderedTags(h)],
+      [...this.getRenderedTags(this.map, h)],
     )
   }
 }

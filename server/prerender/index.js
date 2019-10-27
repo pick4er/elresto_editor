@@ -3,8 +3,6 @@ import path from 'path';
 import Vue from 'vue';
 import { createBundleRenderer } from 'vue-server-renderer';
 
-import getComponentsFromMap from 'helpers/getComponentsFromMap'
-
 import markup from 'server/templates';
 import ssrBundle from 'bundle/vue-ssr-server-bundle.json';
 import clientManifest from 'build/vue-ssr-client-manifest.json';
@@ -45,12 +43,22 @@ function getData() {
   return parsedData;
 }
 
+function getComponents() {
+  const rawComponents = fs.readFileSync(
+    path.join(process.cwd(), 'public', 'mockComponents.json'),
+    { encoding: 'utf-8' },
+  );
+  const { components } = JSON.parse(rawComponents);
+
+  return components;
+}
+
 async function prerender(ctx) {
   const { isMobile = false } = ctx.userAgent;
 
   const map = getMap();
   const data = getData();
-  const componentsToRegister = getComponentsFromMap(map);
+  const components = getComponents()
 
   const context = {
     url: ctx.url,
@@ -58,7 +66,7 @@ async function prerender(ctx) {
     layout: isMobile ? 'mobile' : 'desktop',
     map,
     data,
-    components: componentsToRegister,
+    components,
   };
 
   const html = await renderer.renderToString(context)

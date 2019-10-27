@@ -1,6 +1,10 @@
 {
   "map": [
-    ["base-button_1", "BaseButton"],
-    ["base-button_2", "BaseButton"]
+    ["base-button_1"],
+    [
+      "base-block_1", [
+        ["base-block_2", ["base-button_2"]]
+      ]
+    ]
   ]
 }

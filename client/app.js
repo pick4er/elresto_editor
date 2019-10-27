@@ -9,8 +9,14 @@ const BaseButton = () => import(
   'client/components/BaseButton'
 );
 
+const BaseBlock = () => import(
+  /* webpackChunkName: "BaseBlock" */
+  'client/components/BaseBlock'
+);
+
 const globalComponents = {
   BaseButton,
+  BaseBlock,
 }
 
 function registerComponents(components) {

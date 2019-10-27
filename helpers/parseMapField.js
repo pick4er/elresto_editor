@@ -1,9 +1,9 @@
 
 function parseMapField(mapField) {
   const preciseTag = mapField[0];
-  const componentName = mapField[1];
+  const children = mapField[1];
 
-  return { preciseTag, componentName };
+  return { preciseTag, children };
 }
 
 export default parseMapField;
