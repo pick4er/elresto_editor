@@ -11,6 +11,7 @@ import favicon from './handlers/favicon';
 
 import assets from './routes/assets';
 import client from './routes/client';
+import site from './routes/site';
 
 const app = new Koa();
 const router = new Router();
@@ -26,6 +27,7 @@ app.use(favicon);
 /* global PUBLIC_PATH */
 router
   .get(`${PUBLIC_PATH}*`, assets)
+  .get('/site', site)
   .get('*', client);
 
 app.use(router.routes());

@@ -1,6 +1,0 @@
-{
-  "components": [
-    ["base-block", "BaseBlock"],
-    ["base-button", "BaseButton"]
-  ]
-}

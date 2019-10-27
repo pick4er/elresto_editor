@@ -3,16 +3,17 @@
     <label :for="id">Введите название сайта (на латинице):</label>
     <span>
       <base-input v-model="value" :id="id" />
-      <base-button title="Опубликовать" />
+      <base-button :title="buttonTitle" @click="onClick" />
     </span>
 
-    <hr />
-    <h2>Дальше идёт редактор сайта</h2>
     <hr />
   </div>
 </template>
 
 <script>
+  import api from 'api';
+  import debounce from 'lodash.debounce'
+
   import BaseInput from 'client/components/BaseInput'
   import BaseButton from 'client/components/BaseButton'
 
@@ -22,12 +23,39 @@
       'base-input': BaseInput,
       'base-button': BaseButton,
     },
+    mounted() {
+      this.debouncedSearch = debounce(this.search, 1000);
+    },
     data() {
       return {
         value: '',
-        id: 'siteName'
+        id: 'siteName',
+        debouncedSearch: () => {},
       }
     },
+    watch: {
+      value(nextValue) {
+        this.debouncedSearch(nextValue)
+      }
+    },
+    computed: {
+      buttonTitle() {
+        if (this.mode === 'edit') return 'Сохранить'
+        if (this.mode === 'create') return 'Опубликовать'
+      },
+      mode() {
+        return this.$store.state.mode
+      }
+    },
+    methods: {
+      onClick() {},
+      search(value) {
+        this.$store.dispatch({
+          type: 'GET_SITE',
+          siteName: value,
+        })
+      },
+    }
   }
 </script>
 
@@ -59,8 +87,4 @@
 
     hr
       width 100%
-
-    h2
-      margin x(0)
-      text-align center
 </style>

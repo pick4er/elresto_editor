@@ -1,0 +1,46 @@
+{
+  "map": [
+    ["base-button_1"],
+    [
+      "base-block_1", [
+        ["base-block_2", ["base-button_2", ["base-block_3"]]],
+        ["base-button_4"]
+      ]
+    ]
+  ],
+  "data": {
+    "base-button_1": { 
+      "props": { 
+        "title": "Moscow-1" 
+      }, 
+      "style": { 
+        "color": "red" 
+      } 
+    }, 
+    "base-button_2": { 
+      "props": { 
+        "title": "Moscow-2" 
+      }, 
+      "style": { 
+        "color": "blue" 
+      } 
+    },
+    "base-block_2": {
+      "style": {
+        "border-color": "blue"
+      }
+    },
+    "base-button_4": {
+      "props": {
+        "title": "Paris"
+      },
+      "style": {
+        "color": "purple"
+      }
+    }
+  },
+  "components": [
+    ["base-block", "BaseBlock"],
+    ["base-button", "BaseButton"]
+  ]
+}

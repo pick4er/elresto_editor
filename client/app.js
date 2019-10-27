@@ -22,7 +22,14 @@ const EditorWrap = () => import(
 const globalComponents = {
   BaseButton,
   BaseBlock,
+  EditorWrap,
 }
+
+const allComponents = [
+  ['editor-wrap', 'EditorWrap'],
+  ['base-button', 'BaseButton'],
+  ['base-block', 'BaseBlock'],
+]
 
 function registerComponents(components) {
   for (let i = 0; i < components.length; i += 1) {
@@ -33,10 +40,10 @@ function registerComponents(components) {
 
 function createApp(store, router, initialState) {
   if (store.state.isEdit) {
-    Vue.component('editor-wrap', EditorWrap)
+    registerComponents(allComponents)
+  } else {
+    registerComponents(store.state.components)
   }
-
-  registerComponents(store.state.components)
 
   return new Vue({
     store,

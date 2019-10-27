@@ -23,42 +23,13 @@ const renderer = createBundleRenderer(ssrBundle, {
   }),
 });
 
-function getMap() {
-  const rawMap = fs.readFileSync(
-    path.join(process.cwd(), 'public', 'mockMap.json'),
-    { encoding: 'utf-8' },
-  );
-  const { map } = JSON.parse(rawMap);
-
-  return map;
-}
-
-function getData() {
-  const rawData = fs.readFileSync(
-    path.join(process.cwd(), 'public', 'mockData.json'),
-    { encoding: 'utf-8' },
-  );
-  const parsedData = JSON.parse(rawData);
-
-  return parsedData;
-}
-
-function getComponents() {
-  const rawComponents = fs.readFileSync(
-    path.join(process.cwd(), 'public', 'mockComponents.json'),
-    { encoding: 'utf-8' },
-  );
-  const { components } = JSON.parse(rawComponents);
-
-  return components;
-}
 
 async function prerender(ctx) {
   const { isMobile = false } = ctx.userAgent;
 
-  const map = getMap();
-  const data = getData();
-  const components = getComponents()
+  const map = []
+  const data = {}
+  const components = []
 
   const context = {
     url: ctx.url,
