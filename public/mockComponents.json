@@ -1,5 +1,6 @@
 {
   "components": [
+    ["site-input", "SiteInput"],
     ["base-block", "BaseBlock"],
     ["base-button", "BaseButton"]
   ]
