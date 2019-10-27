@@ -2,6 +2,8 @@ import api from 'api';
 
 import parseMapField from 'helpers/parseMapField'
 
+const CHILDREN_INDEX = 1
+
 /*
   "map": [
     [
@@ -43,6 +45,39 @@ function findElementInMap(map, requiredPreciseTag, position = [0], level = 0) {
   }
 
   return { isFound, isExhausted, position }
+}
+
+function sanitizePosition(position) {
+  const sanitizedPosition = []
+
+  for (let i = 0; i < position.length; i++) {
+    if (typeof position[i] === 'number') {
+      sanitizedPosition.push(position[i])
+    }
+  }
+
+  return sanitizedPosition
+}
+
+function addChildrenIndexesToPosition(position) {
+  const positionWithChildIndexes = []
+  // last is tag itself
+  for (let i = 0; i < position.length; i += 1) {
+    positionWithChildIndexes.push(position[i])
+    if (i < (position.length - 1)) {
+      positionWithChildIndexes.push(CHILDREN_INDEX)
+    }
+  }
+
+  return positionWithChildIndexes
+}
+
+function inserIntoMapWithPosition(map, position, i = 0) {
+  if (i < (position.length - 1)) {
+    inserIntoMapWithPosition(map[position[i]], position, i += 1)
+  } else {
+    map.splice(map[position[i]] + 1, 0, ['base-block_10'])
+  }
 }
 
 export default {
@@ -88,14 +123,15 @@ export default {
       }
     } = context
 
-    if (direction === 'top') {
+    const { position } = findElementInMap(map, preciseTag)
+    const preparedPosition = addChildrenIndexesToPosition(sanitizePosition(position))
 
-    } else if (direction === 'right') {
+    const clonedMap = JSON.parse(JSON.stringify(map))
+    inserIntoMapWithPosition(clonedMap, preparedPosition)
 
-    } else if (direction === 'bottom') {
-
-    } else if (direction === 'left') {
-
-    }
+    commit({
+      type: 'UPDATE_MAP',
+      map: clonedMap,
+    })
   }
 };

@@ -16,6 +16,7 @@ export default {
   },
   methods: {
     getRenderedTags(tags, h) {
+      debugger;
       const renderedTags = []
 
       for (let i = 0; i < tags.length; i += 1) {
@@ -36,6 +37,7 @@ export default {
     }
   },
   render(h) {
+    debugger;
     return h(
       'div',
       [...this.getRenderedTags(this.map, h)],
