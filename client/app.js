@@ -14,6 +14,11 @@ const BaseBlock = () => import(
   'client/components/BaseBlock'
 );
 
+const EditorWrap = () => import(
+  /* webpackChunkName: "EditorWrap" */
+  'client/components/EditorWrap'
+);
+
 const globalComponents = {
   BaseButton,
   BaseBlock,
@@ -27,6 +32,10 @@ function registerComponents(components) {
 }
 
 function createApp(store, router, initialState) {
+  if (store.state.isEdit) {
+    Vue.component('editor-wrap', EditorWrap)
+  }
+
   registerComponents(store.state.components)
 
   return new Vue({

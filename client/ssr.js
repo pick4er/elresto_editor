@@ -6,6 +6,7 @@ export default context => new Promise((resolve, reject) => {
     data: context.data, 
     map: context.map,
     components: context.components,
+    isEdit: context.isEdit,
   };
 
   const router = createRouter()

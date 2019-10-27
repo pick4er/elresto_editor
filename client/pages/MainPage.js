@@ -10,6 +10,9 @@ export default {
     data() {
       return this.$store.state.data
     },
+    isEdit() {
+      return this.$store.state.isEdit
+    }
   },
   methods: {
     getRenderedTags(tags, h) {
@@ -22,7 +25,11 @@ export default {
 
         const renderedChildren = this.getRenderedTags(children, h)
 
-        renderedTags.push(h(commonTagName, tagData, renderedChildren))
+        if (this.isEdit) {
+          renderedTags.push(h('editor-wrap', [h(commonTagName, tagData, renderedChildren)]))
+        } else {
+          renderedTags.push(h(commonTagName, tagData, renderedChildren))
+        }
       }
 
       return renderedTags
