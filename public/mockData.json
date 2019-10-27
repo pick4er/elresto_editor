@@ -14,5 +14,18 @@
     "style": { 
       "color": "blue" 
     } 
+  },
+  "base-block_2": {
+    "style": {
+      "border-color": "blue"
+    }
+  },
+  "base-button_4": {
+    "props": {
+      "title": "Paris"
+    },
+    "style": {
+      "color": "purple"
+    }
   }
 }
