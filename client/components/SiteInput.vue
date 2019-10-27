@@ -1,8 +1,10 @@
 <template>
   <div :class="$style.siteInput">
     <label :for="id">Введите название сайта (на латинице):</label>
-    <base-input v-model="value" :id="id" />
-    <base-button title="Опубликовать" />
+    <span>
+      <base-input v-model="value" :id="id" />
+      <base-button title="Опубликовать" />
+    </span>
 
     <hr />
     <h2>Дальше идёт редактор сайта</h2>
@@ -39,18 +41,26 @@
       font-size x(20)
       margin-bottom x(5)
 
-    input
-      color black
-      font-size x(16)
-      height x(30)
-      width auto
+    span
+      display flex
+      flex-flow row nowrap
+
+      input
+        flex-grow 5
+        color black
+        font-size x(16)
+        height x(30)
+        width auto
       
-    button
-      margin-top x(5)
-      
+      button
+        flex-grow 1
+        margin-left x(5)
+        width auto
+
     hr
       width 100%
 
     h2
+      margin x(0)
       text-align center
 </style>
