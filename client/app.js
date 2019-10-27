@@ -1,5 +1,7 @@
 import Vue from 'vue';
 
+import parseComponentField from 'helpers/parseComponentField'
+
 import App from 'client/App.vue';
 import createRouter from 'client/router';
 import createStore from 'client/flux';
@@ -33,7 +35,7 @@ const allComponents = [
 
 function registerComponents(components) {
   for (let i = 0; i < components.length; i += 1) {
-    const [tagName, componentName] = components[i]
+    const { tagName, componentName } = parseComponentField(components[i])
     Vue.component(tagName, globalComponents[componentName])
   }
 }

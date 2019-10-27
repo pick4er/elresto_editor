@@ -26,7 +26,7 @@ export default {
         const renderedChildren = this.getRenderedTags(children, h)
 
         if (this.isEdit) {
-          renderedTags.push(h('editor-wrap', [h(commonTagName, tagData, renderedChildren)]))
+          renderedTags.push(h('editor-wrap', { props: { preciseTag } }, [h(commonTagName, tagData, renderedChildren)]))
         } else {
           renderedTags.push(h(commonTagName, tagData, renderedChildren))
         }

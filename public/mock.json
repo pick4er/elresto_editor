@@ -3,8 +3,8 @@
     ["base-button_1"],
     [
       "base-block_1", [
-        ["base-block_2", ["base-button_2", ["base-block_3"]]],
-        ["base-button_4"]
+        ["base-block_2", [["base-button_2"], ["base-block_3"]]],
+        ["base-button_3"]
       ]
     ]
   ],
@@ -30,7 +30,7 @@
         "border-color": "blue"
       }
     },
-    "base-button_4": {
+    "base-button_3": {
       "props": {
         "title": "Paris"
       },
@@ -40,7 +40,7 @@
     }
   },
   "components": [
-    ["base-block", "BaseBlock"],
-    ["base-button", "BaseButton"]
+    ["base-block", "BaseBlock", 3],
+    ["base-button", "BaseButton", 3]
   ]
 }
