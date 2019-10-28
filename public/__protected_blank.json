@@ -1,0 +1,39 @@
+{
+  "map": [
+    ["base-block_1", ["base-block_2", ["base-button_1"]]],
+    ["base-button_2"]
+  ],
+  "data": {
+    "base-block_1": {
+      "props": {
+        "index": "Hello"
+      }
+    },
+    "base-block_2": {
+      "style": {
+        "border-color": "orange",
+        "font-size": "20px"
+      },
+      "props": {
+        "index": ", world!"
+      }
+    },
+    "base-button_1": {
+      "props": {
+        "title": "Moscow never sleeps"
+      },
+      "style": {
+        "background-color": "blue"
+      }
+    },
+    "base-button_2": {
+      "props": {
+        "title": "ДИЗЗЗЗАЙН!!1!"
+      }
+    }
+  },
+  "components": [
+    ["base-block", "BaseBlock", 2],
+    ["base-button", "BaseButton", 2]
+  ]
+}
