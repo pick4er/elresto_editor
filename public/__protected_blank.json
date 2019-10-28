@@ -1,12 +1,18 @@
 {
   "map": [
-    ["base-block_1", ["base-block_2", ["base-button_1"]]],
+    ["base-block_1", [
+        ["base-block_2", [
+            ["base-button_1"]
+          ]
+        ]
+      ]
+    ],
     ["base-button_2"]
   ],
   "data": {
     "base-block_1": {
       "props": {
-        "index": "Hello"
+        "index": "Hello ,"
       }
     },
     "base-block_2": {
@@ -15,20 +21,21 @@
         "font-size": "20px"
       },
       "props": {
-        "index": ", world!"
+        "index": "Elresto!"
       }
     },
     "base-button_1": {
       "props": {
-        "title": "Moscow never sleeps"
+        "title": "Розовое вино"
       },
       "style": {
-        "background-color": "blue"
+        "background-color": "palevioletred",
+        "color": "white"
       }
     },
     "base-button_2": {
       "props": {
-        "title": "ДИЗЗЗЗАЙН!!1!"
+        "title": "pick4er"
       }
     }
   },
