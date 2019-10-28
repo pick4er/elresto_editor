@@ -1,4 +1,4 @@
-import { createApp, createStore, createRouter } from 'client/app';
+import { createApp, createStore, createRouter } from 'client/createApp';
 
 export default context => new Promise((resolve, reject) => {
   const initialState = { 

@@ -16,7 +16,6 @@ export default {
   },
   methods: {
     getRenderedTags(tags, h) {
-      debugger;
       const renderedTags = []
 
       for (let i = 0; i < tags.length; i += 1) {
@@ -27,7 +26,13 @@ export default {
         const renderedChildren = this.getRenderedTags(children, h)
 
         if (this.isEdit) {
-          renderedTags.push(h('editor-wrap', { props: { preciseTag } }, [h(commonTagName, tagData, renderedChildren)]))
+          renderedTags.push(
+            h(
+              'editor-wrap', 
+              { props: { preciseTag } }, 
+              [h(commonTagName, tagData, renderedChildren)]
+            )
+          )
         } else {
           renderedTags.push(h(commonTagName, tagData, renderedChildren))
         }
@@ -37,7 +42,6 @@ export default {
     }
   },
   render(h) {
-    debugger;
     return h(
       'div',
       [...this.getRenderedTags(this.map, h)],

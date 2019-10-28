@@ -1,12 +1,21 @@
 <template>
   <div :class="$style.block">
-    <slot />
+    <p>{{ index }}</p>
+    <template>
+      <slot />
+    </template>
   </div>
 </template>
 
 <script>
   export default {
     name: 'base-block',
+    props: {
+      index: {
+        type: [String, Number],
+        required: true,
+      }
+    }
   };
 </script>
 

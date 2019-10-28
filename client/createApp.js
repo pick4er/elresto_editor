@@ -2,7 +2,7 @@ import Vue from 'vue';
 
 import parseComponentField from 'helpers/parseComponentField'
 
-import App from 'client/App.vue';
+import App from 'client/App';
 import createRouter from 'client/router';
 import createStore from 'client/flux';
 
@@ -21,16 +21,23 @@ const EditorWrap = () => import(
   'client/components/EditorWrap'
 );
 
+const SiteInput = () => import(
+  /* webpackChunkName: "SiteInput" */
+  'client/components/SiteInput'
+);
+
 const globalComponents = {
   BaseButton,
   BaseBlock,
   EditorWrap,
+  SiteInput,
 }
 
 const allComponents = [
   ['editor-wrap', 'EditorWrap'],
   ['base-button', 'BaseButton'],
   ['base-block', 'BaseBlock'],
+  ['site-input', 'SiteInput'],
 ]
 
 function registerComponents(components) {

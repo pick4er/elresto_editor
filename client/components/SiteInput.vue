@@ -48,7 +48,12 @@
       }
     },
     methods: {
-      onClick() {},
+      onClick() {
+        this.$store.dispatch({
+          type: 'SAVE_SITE',
+          siteName: this.value,
+        })
+      },
       search(value) {
         this.$store.dispatch({
           type: 'GET_SITE',

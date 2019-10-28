@@ -3,6 +3,8 @@ import path from 'path';
 import Vue from 'vue';
 import { createBundleRenderer } from 'vue-server-renderer';
 
+import { get_site_file } from '../routes/site'
+
 import markup from 'server/templates';
 import ssrBundle from 'bundle/vue-ssr-server-bundle.json';
 import clientManifest from 'build/vue-ssr-client-manifest.json';
@@ -24,23 +26,44 @@ const renderer = createBundleRenderer(ssrBundle, {
 });
 
 
+function get_resto_files(resto_name) {
+  try {
+    const { map, data, components } = get_site_file(resto_name)
+
+    return { map, data, components }
+  } catch (e) {
+    console.log('e:', e)
+    return null
+  }
+}
+
 async function prerender(ctx) {
   const { isMobile = false } = ctx.userAgent;
+  const { subdomains = [] } = ctx.request
+  const resto_name = subdomains[0]
 
-  const map = []
-  const data = {}
-  const components = []
+  const isEdit = !resto_name
+
+  console.log('resto_name:', resto_name)
+  console.log('isEdit:', isEdit)
 
   const context = {
     url: ctx.url,
     isMobile,
     layout: isMobile ? 'mobile' : 'desktop',
-    map,
-    data,
-    components,
-    isEdit: true,
+    isEdit,
+    map: [],
+    data: {},
+    components: [],
   };
 
+  if (!isEdit) {
+    const { map, data, components } = get_resto_files(resto_name) || {}
+    context.map = map,
+    context.data = data
+    context.components = components
+  }
+  
   const html = await renderer.renderToString(context)
     .catch(err => {
       console.log(err);

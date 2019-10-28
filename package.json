@@ -15,8 +15,9 @@
     "build-prod-client": "webpack --config lib/client/prod.js",
     "build-prod-ssr": "webpack --config lib/ssr/prod.js",
     "start": "node build/server.js",
+    "compile-prod": "export NODE_ENV=production && npm run prepare && npm run build-prod-ssr && npm run build-prod-client && npm run build-prod-server",
     "dev": "export NODE_ENV=development && npm run prepare && npm run build-dev-ssr && npm run build-dev-client && npm run build-dev-server && npm run start",
-    "prod": "export NODE_ENV=production && npm run prepare && npm run build-prod-ssr && npm run build-prod-client && npm run build-prod-server && npm run start",
+    "prod": "npm run compile-prod && npm run start",
     "heroku-postbuild": "export NODE_ENV=production && npm run build-prod-client && npm run build-prod-ssr && npm run build-prod-server"
   },
   "author": "pick4er",

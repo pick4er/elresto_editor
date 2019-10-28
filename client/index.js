@@ -1,4 +1,4 @@
-import { createApp, createStore, createRouter } from 'client/app';
+import { createApp, createStore, createRouter } from 'client/createApp';
 
 import 'client/styles/app.styl';
 

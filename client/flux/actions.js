@@ -1,6 +1,7 @@
 import api from 'api';
 
 import parseMapField from 'helpers/parseMapField'
+import parseComponentField from 'helpers/parseComponentField'
 
 const CHILDREN_INDEX = 1
 
@@ -25,7 +26,7 @@ function findElementInMap(map, requiredPreciseTag, position = [0], level = 0) {
       // if current tag is the one we looked for
       isFound = true
     } else if (children.length > 0) {
-      // current tag is not needed, but there is children to look in for
+      // current tag is not needed, but there are children to look in for
       level += 1
       position[level] = 0
       const result = findElementInMap(children, requiredPreciseTag, position, level)
@@ -61,7 +62,7 @@ function sanitizePosition(position) {
 
 function addChildrenIndexesToPosition(position) {
   const positionWithChildIndexes = []
-  // last is tag itself
+  // the last is tag itself
   for (let i = 0; i < position.length; i += 1) {
     positionWithChildIndexes.push(position[i])
     if (i < (position.length - 1)) {
@@ -72,11 +73,43 @@ function addChildrenIndexesToPosition(position) {
   return positionWithChildIndexes
 }
 
-function inserIntoMapWithPosition(map, position, i = 0) {
+function findComponentPositionIndexInComponents(components, commonTagName) {
+  for (let i = 0; i < components.length; i += 1) {
+    const { tagName, componentIndex } = parseComponentField(components[i])
+    if (commonTagName === tagName) {
+      return i
+    }
+  }
+
+  return null  
+}
+
+function updateComponentIndex(components, componentPositionIndex, nextComponentIndex) {
+  components[componentPositionIndex][2] = nextComponentIndex
+}
+
+function updateComponentData(data, preciseTag, componentData) {
+  data[preciseTag] = { ...componentData }
+}
+
+function inserIntoMapWithPosition(map, components, data, position, i = 0) {
   if (i < (position.length - 1)) {
-    inserIntoMapWithPosition(map[position[i]], position, i += 1)
+    inserIntoMapWithPosition(map[position[i]], components, data, position, i += 1)
   } else {
-    map.splice(map[position[i]] + 1, 0, ['base-block_10'])
+    const componentPositionIndex = findComponentPositionIndexInComponents(components, 'base-block')
+    const { componentIndex } = parseComponentField(components[componentPositionIndex])
+
+    const nextComponentIndex = componentIndex + 1
+    const nextPreciseTagName = `base-block_${nextComponentIndex}`
+    const nextComponentData = {
+      "props": {
+        "index": nextComponentIndex
+      }
+    }
+
+    updateComponentData(data, nextPreciseTagName, nextComponentData)
+    updateComponentIndex(components, componentPositionIndex, nextComponentIndex)
+    map.splice(map[position[i]] + 1, 0, [nextPreciseTagName])
   }
 }
 
@@ -87,7 +120,7 @@ export default {
     const url = `site?name=${siteName}`
     const { data, components, map, status } = await api(url)
 
-    if (status !== 'ok') {
+    if (status === 'error') {
       commit({
         type: 'UPDATE_MODE',
         mode: 'create',
@@ -102,10 +135,20 @@ export default {
       return
     }
 
-    commit({
-      type: 'UPDATE_MODE',
-      mode: 'edit',
-    })
+    if (status === 'ok') {
+      commit({
+        type: 'UPDATE_MODE',
+        mode: 'edit',
+      })
+    }
+
+    if (status === 'new') {
+      commit({
+        type: 'UPDATE_MODE',
+        mode: 'create',
+      })
+    }
+
     commit({
       type: 'UPDATE_SITE',
       map,
@@ -113,6 +156,31 @@ export default {
       components,
     })
   },
+
+  async SAVE_SITE(context, { siteName }) {
+    const { state: { map, data, components, mode } } = context
+
+    let url
+    if (mode === 'create') {
+      url = 'add_site'
+    } else if (mode === 'edit') {
+      url = 'update_site'
+    }
+
+    const response = await api(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: {
+        siteName,
+        map,
+        data,
+        components,
+      }
+    })
+  },
+
   ADD_BLOCK(context, { direction, preciseTag }) {
     const { 
       commit,
@@ -127,11 +195,15 @@ export default {
     const preparedPosition = addChildrenIndexesToPosition(sanitizePosition(position))
 
     const clonedMap = JSON.parse(JSON.stringify(map))
-    inserIntoMapWithPosition(clonedMap, preparedPosition)
+    const clonedComponents = JSON.parse(JSON.stringify(components))
+    const clonedData = JSON.parse(JSON.stringify(data))
+    inserIntoMapWithPosition(clonedMap, clonedComponents, clonedData, preparedPosition)
 
     commit({
-      type: 'UPDATE_MAP',
+      type: 'UPDATE_SITE',
       map: clonedMap,
+      data: clonedData,
+      components: clonedComponents,
     })
   }
 };
