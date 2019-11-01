@@ -1,8 +1,6 @@
 
 function parseMapField(mapField) {
-  const preciseTag = mapField[0];
-  const children = mapField[1];
-
+  const [preciseTag, children] = mapField;
   return { preciseTag, children };
 }
 

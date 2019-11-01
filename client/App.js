@@ -7,7 +7,7 @@ export default {
     }
   },
   render(h) {
-    let renderedTags = []
+    const renderedTags = []
     if (this.isEdit) {
       renderedTags.push(
         h('site-input')
