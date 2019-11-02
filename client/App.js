@@ -10,7 +10,7 @@ export default {
     const renderedTags = []
     if (this.isEdit) {
       renderedTags.push(
-        h('site-input')
+        h('editor-site-input')
       )
     }
 

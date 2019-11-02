@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style.siteInput">
+  <div :class="$style.editorSiteInput">
     <label :for="id">Введите название сайта (на латинице):</label>
     <span>
       <base-input v-model="value" :id="id" />
@@ -18,7 +18,7 @@
   import BaseButton from 'client/components/BaseButton'
 
   export default {
-    name: 'site-input',
+    name: 'editor-site-input',
     components: {
       'base-input': BaseInput,
       'base-button': BaseButton,
@@ -65,7 +65,7 @@
 </script>
 
 <style lang="stylus" module>
-  .siteInput
+  .editorSiteInput
     display flex
     flex-flow column
     margin x(10)

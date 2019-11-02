@@ -21,23 +21,23 @@ const EditorWrap = () => import(
   'client/components/EditorWrap'
 );
 
-const SiteInput = () => import(
-  /* webpackChunkName: "SiteInput" */
-  'client/components/SiteInput'
+const EditorSiteInput = () => import(
+  /* webpackChunkName: "EditorSiteInput" */
+  'client/components/EditorSiteInput'
 );
 
 const globalComponents = {
   BaseButton,
   BaseBlock,
   EditorWrap,
-  SiteInput,
+  EditorSiteInput,
 }
 
 const allComponents = [
   ['editor-wrap', 'EditorWrap'],
   ['base-button', 'BaseButton'],
   ['base-block', 'BaseBlock'],
-  ['site-input', 'SiteInput'],
+  ['editor-site-input', 'EditorSiteInput'],
 ]
 
 function registerComponents(components) {

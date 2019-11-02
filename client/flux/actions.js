@@ -161,7 +161,7 @@ export default {
   },
 
   async SAVE_SITE(context, { siteName }) {
-    const { state: { map, data, components, mode } } = context
+    const { state: { map, data, components, mode }, commit } = context
 
     let url
     if (mode === 'create') {
@@ -181,6 +181,11 @@ export default {
         data,
         components,
       }
+    })
+
+    commit({
+      type: 'UPDATE_MODE',
+      mode: 'edit',
     })
   },
 
