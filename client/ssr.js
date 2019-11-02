@@ -1,5 +1,7 @@
 import { createApp, createStore, createRouter } from 'client/createApp';
 
+import 'client/styles/app.styl';
+
 export default context => new Promise((resolve, reject) => {
   const initialState = { 
     isMobile: context.isMobile, 
