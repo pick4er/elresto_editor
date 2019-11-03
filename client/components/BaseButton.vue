@@ -1,12 +1,19 @@
 <template>
-  <button
-    v-bind="$attrs"
-    :type="type" 
-    :class="$style.button"
-    @click="$emit('click', $event)"
-  >
-    {{ title }}
-  </button>
+  <div :class="$style.wrap">
+    <slot name="left" />
+    <slot name="top" />
+
+    <button
+      v-bind="$attrs"
+      :type="type" 
+      :class="$style.button"
+      @click="$emit('click', $event)"
+    >
+      {{ title }}
+    </button>
+    <slot name="bottom" />
+    <slot name="right" />
+  </div>
 </template>
 
 <script>
@@ -27,10 +34,16 @@
 </script>
 
 <style lang="stylus" module>
-  .button
-    flexCenter()
+  .wrap
+    position relative
+    width 100%
+    height 100%
+    min-height x(30)
     display inline-flex
-    height x(30)
+
+  .button
+    height 100%
+    min-height x(30)
     width 100%
     font-size x(16)
     font-family $robotoRegular
