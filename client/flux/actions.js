@@ -23,28 +23,20 @@ function findElementInMap(map, requiredPreciseTag, position = [0], level = 0) {
   let isFound = false
   let isExhausted = false
   while (!isFound && !isExhausted) {
-    debugger
     const { preciseTag, children = [] } = parseMapField(map[position[level]])
-    debugger
     if (preciseTag === requiredPreciseTag) {
       // if current tag is the one we looked for
-      debugger
       isFound = true
       break
     } else if (children.length > 0) {
       // current tag is not needed, but there are children to look in for
-      debugger
       level += 1
       position[level] = 0
-      debugger
       const result = findElementInMap(children, requiredPreciseTag, position, level)
-      debugger
       if (result.isFound) {
-        debugger
         isFound = true
         break
       } else if (result.isExhausted) {
-        debugger
         position[level] = null
         level -= 1
       }
@@ -52,21 +44,17 @@ function findElementInMap(map, requiredPreciseTag, position = [0], level = 0) {
 
     if ((map.length - 1) > position[level]) {
       // current child is not we looked for, but there are some other leaves
-      debugger
       position[level] += 1
     } else if ((map.length - 1) === position[level]) {
-      debugger
       isExhausted = true
     }
   }
 
-  debugger
   return { isFound, isExhausted, position }
 }
 
 function getComponentParentPosition(componentPosition) {
   const componentLevel = componentPosition.length
-  debugger;
   // we need to get a parent position, which level is higher
   return componentPosition.slice(0, componentLevel - 1)
 }
@@ -109,28 +97,22 @@ function wrapMapFieldInGrid(mapField, components) {
 }
 
 function wrapInGridAndUpdatePosition(map, components, data, parentPosition, position) {
-  debugger
   let parentMapField = map
   for (let level = 0; level < parentPosition.length; level += 1) {
-    parentMapField = map[parentPosition[level]]
+    parentMapField = parentMapField[parentPosition[level]]
   }
   const { children: parentFieldChildren } = parseMapField(parentMapField)
 
-  debugger
   let mapField = map
   for (let level = 0; level < position.length; level += 1) {
     mapField = mapField[position[level]]
   }
 
-  debugger
   const fieldIndexInMap = position[position.length - 1]
-  debugger
   const fieldInGrid = wrapMapFieldInGrid(mapField, components)
-  debugger
   parentFieldChildren.splice(fieldIndexInMap, 1, fieldInGrid)
 
   // update position
-  debugger
   position.splice(position.length - 1, 0, 0, 1)
 }
 
@@ -279,15 +261,11 @@ export default {
     const clonedComponents = JSON.parse(JSON.stringify(components))
     const clonedData = JSON.parse(JSON.stringify(data))
 
-    debugger;
     const parentPosition = getComponentParentPosition(sanitizedPosition)
     const preparedParentPosition = addChildrenIndexesToPosition(parentPosition)
-    debugger;
     const isGrid = isGridComponent(map, preparedParentPosition)
     if (!isGrid) {
-      debugger
       wrapInGridAndUpdatePosition(clonedMap, clonedComponents, clonedData, preparedParentPosition, preparedPosition)
-      debugger
     }
 
     insertIntoMapWithPreparedPosition(direction, clonedMap, clonedComponents, clonedData, preparedPosition)
