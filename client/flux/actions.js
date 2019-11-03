@@ -71,15 +71,15 @@ function sanitizePosition(position) {
   return sanitizedPosition;
 }
 
-function isGridComponent(map, position) {
+function isGridComponent(map, preciseTag) {
+  const { preparedParentPosition: position } = getPreparedPositions(map, preciseTag)
+
   let mapField = map;
   for (let level = 0; level < position.length; level += 1) {
     mapField = mapField[position[level]];
   }
 
-  const { preciseTag = '' } = parseMapField(mapField);
-  const { commonTagName } = parsePreciseTag(preciseTag);
-
+  const { commonTagName } = parsePreciseTag(parseMapField(mapField).preciseTag);
   return commonTagName === SYSTEM_GRID_COMMON_TAG_NAME;
 }
 
@@ -129,10 +129,6 @@ function wrapInGridAndUpdatePosition(map, components, data, parentPosition, posi
   const fieldIndexInMap = position[position.length - 1];
   const fieldInGrid = wrapMapFieldInGrid(mapField, components, data);
   parentFieldChildren.splice(fieldIndexInMap, 1, fieldInGrid);
-
-  // update positions
-  position.splice(position.length - 1, 0, 0, 1);
-  parentPosition.push(1, 0);
 }
 
 function addChildrenIndexesToPosition(position) {
@@ -179,32 +175,62 @@ function getComponentRowAndColumn(data, preciseTag) {
   return { row, column };
 }
 
-function updateGridRowsAndColumns(direction, data, preciseGridTag) {
-  const { rows: currentRows, columns: currentColumns } = getGridRowsAndColumns(data, preciseGridTag);
-
-  let nextRows = currentRows;
-  let nextColumns = currentColumns;
-
-  if (direction === 'left' || direction === 'right') {
-    nextColumns += 1;
-  } else if (direction === 'top' || direction === 'bottom') {
-    nextRows += 1;
-  }
-
+function updateGridRowsAndColumns(data, preciseGridTag, maxColumn, maxRow) {
   const currentGridData = data[preciseGridTag];
   const nextGridData = {
     ...currentGridData,
     props: {
       ...currentGridData.props,
-      rows: nextRows,
-      columns: nextColumns,
+      rows: maxRow,
+      columns: maxColumn,
     },
   };
 
   updateComponentData(data, preciseGridTag, nextGridData);
 }
 
-function shiftGridComponentsPositions(direction, data, gridChildren) {
+function defineByCoordsIsPositionBusy(data, children, row, column) {
+  let isBusy = false
+  for (let i = 0; i < children.length; i += 1) {
+    const childMapField = children[i]
+    const { preciseTag } = parseMapField(childMapField)
+    const { row: currentRow, column: currentColumn } = getComponentRowAndColumn(data, preciseTag)
+
+    if (currentRow === row && currentColumn === column) {
+      isBusy = true
+      break
+    }
+  }
+
+  return isBusy
+}
+
+function getMaxColumnAndRow(data, children) {
+  let maxRow = 0
+  let maxColumn = 0
+  for (let i = 0; i < children.length; i += 1) {
+    const childMapField = children[i]
+    const { preciseTag } = parseMapField(childMapField)
+    const { row: currentRow, column: currentColumn } = getComponentRowAndColumn(data, preciseTag)
+
+    if (currentRow > maxRow) {
+      maxRow = currentRow
+    }
+
+    if (currentColumn > maxColumn) {
+      maxColumn = currentColumn
+    }
+  }
+
+  return { maxRow, maxColumn }
+}
+
+function shiftGridComponentsPositions(direction, data, gridChildren, newComponentRow, newComponentColumn) {
+  const isPositionBusy = defineByCoordsIsPositionBusy(data, gridChildren, newComponentRow, newComponentColumn);
+  if (!isPositionBusy) {
+    return
+  }
+
   for (let i = 0; i < gridChildren.length; i++) {
     const childMapField = gridChildren[i];
     const { preciseTag } = parseMapField(childMapField);
@@ -212,9 +238,9 @@ function shiftGridComponentsPositions(direction, data, gridChildren) {
 
     let nextRow = row;
     let nextColumn = column;
-    if (direction === 'top') {
+    if ((direction === 'top' || direction === 'bottom') && row >= newComponentRow) {
       nextRow += 1;
-    } else if (direction === 'left') {
+    } else if ((direction === 'left' || direction === 'right') && column >= newComponentColumn) {
       nextColumn += 1;
     }
 
@@ -232,22 +258,25 @@ function shiftGridComponentsPositions(direction, data, gridChildren) {
   }
 }
 
-function createBlockRowAndColumnByDirection(direction, gridRows, gridColumns, centerRow, centerColumn) {
+function createBlockRowAndColumnByDirection(direction, centerRow, centerColumn) {
   let row;
   let column;
   if (direction === 'top') {
     column = centerColumn;
-    row = 1;
+    row = centerRow - 1;
   } else if (direction === 'right') {
     row = centerRow;
-    column = gridColumns + 1;
+    column = centerColumn + 1;
   } else if (direction === 'bottom') {
-    row = gridRows + 1;
+    row = centerRow + 1;
     column = centerColumn;
   } else if (direction === 'left') {
-    column = 1;
+    column = centerColumn - 1;
     row = centerRow;
   }
+
+  if (row < 1) row = 1
+  if (column < 1) column = 1
 
   return { row, column };
 }
@@ -270,11 +299,11 @@ function insertIntoMapWithPreparedPosition(direction, map, components, data, par
   const { preciseTag: preciseGridTag, children: gridChildren } = parseMapField(gridMapField);
 
   const { row: centerRow, column: centerColumn } = getComponentRowAndColumn(data, preciseTag);
-  const { rows: gridRows, columns: gridColumns } = getGridRowsAndColumns(data, preciseGridTag);
 
-  const { row: newComponentRow, column: newComponentColumn } = createBlockRowAndColumnByDirection(direction, gridRows, gridColumns, centerRow, centerColumn);
-  updateGridRowsAndColumns(direction, data, preciseGridTag);
-  shiftGridComponentsPositions(direction, data, gridChildren);
+  const { row: newComponentRow, column: newComponentColumn } = createBlockRowAndColumnByDirection(direction, centerRow, centerColumn);
+  shiftGridComponentsPositions(direction, data, gridChildren, newComponentRow, newComponentColumn);
+  const { maxColumn, maxRow } = getMaxColumnAndRow(data, gridChildren)
+  updateGridRowsAndColumns(data, preciseGridTag, maxColumn, maxRow);
 
   const newComponentIndex = componentIndex + 1;
   const newPreciseTag = `base-block_${newComponentIndex}`;
@@ -293,6 +322,16 @@ function insertIntoMapWithPreparedPosition(direction, map, components, data, par
 
   const lastPositionLevel = position.length - 1;
   gridChildren.splice(position[lastPositionLevel] + 1, 0, [newPreciseTag]);
+}
+
+function getPreparedPositions(map, preciseTag) {
+  const { position } = findElementInMap(map, preciseTag);
+
+  const sanitizedPosition = sanitizePosition(position);
+  const preparedPosition = addChildrenIndexesToPosition(sanitizedPosition);
+  const preparedParentPosition = addChildrenIndexesToPosition(getComponentParentPosition(sanitizedPosition));
+
+  return { preparedPosition, preparedParentPosition }
 }
 
 export default {
@@ -378,22 +417,16 @@ export default {
       },
     } = context;
 
-    const { position } = findElementInMap(map, preciseTag);
-
-    const sanitizedPosition = sanitizePosition(position);
-    const preparedPosition = addChildrenIndexesToPosition(sanitizedPosition);
-
     const clonedMap = JSON.parse(JSON.stringify(map));
     const clonedComponents = JSON.parse(JSON.stringify(components));
     const clonedData = JSON.parse(JSON.stringify(data));
 
-    const parentPosition = getComponentParentPosition(sanitizedPosition);
-    const preparedParentPosition = addChildrenIndexesToPosition(parentPosition);
-    const isGrid = isGridComponent(map, preparedParentPosition);
-    if (!isGrid) {
+    if (!isGridComponent(clonedMap, preciseTag)) {
+      const { preparedPosition, preparedParentPosition } = getPreparedPositions(clonedMap, preciseTag)
       wrapInGridAndUpdatePosition(clonedMap, clonedComponents, clonedData, preparedParentPosition, preparedPosition);
     }
 
+    const { preparedPosition, preparedParentPosition } = getPreparedPositions(clonedMap, preciseTag)
     insertIntoMapWithPreparedPosition(direction, clonedMap, clonedComponents, clonedData, preparedParentPosition, preparedPosition);
 
     commit({
