@@ -4,6 +4,7 @@
     @mouseover="onHover"
     @mouseleave="onLeave"
   >
+    <editor-button :class="$style.top" v-if="isHovered" @click="onClick('top')" />
     <span>
       <editor-button :class="$style.left" v-if="isHovered" @click="onClick('left')" />
 
@@ -11,6 +12,7 @@
 
       <editor-button :class="$style.right" v-if="isHovered" @click="onClick('right')" />
     </span>
+    <editor-button :class="$style.bottom" v-if="isHovered" @click="onClick('bottom')" />
   </div>
 </template>
 

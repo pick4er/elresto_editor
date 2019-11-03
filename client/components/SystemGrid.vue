@@ -1,18 +1,18 @@
 <template>
-  <div :class="$style.grid">
+  <div :class="$style.systemGrid">
     <slot />
   </div>
 </template>
 
 <script>
   export default {
-    name: 'base-grid',
+    name: 'system-grid',
   }
 </script>
 
 <style lang="stylus" module>
-  .grid
+  .systemGrid
     display: grid;
-    grid-template-columns: min-content;
     grid-template-rows: min-content;
+    grid-template-columns min-content
 </style>

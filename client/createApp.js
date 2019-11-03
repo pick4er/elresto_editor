@@ -16,6 +16,11 @@ const BaseBlock = () => import(
   'client/components/BaseBlock'
 );
 
+const SystemGrid = () => import(
+  /* webpackChunkName: "SystemGrid" */
+  'client/components/SystemGrid'
+);
+
 const EditorWrap = () => import(
   /* webpackChunkName: "EditorWrap" */
   'client/components/EditorWrap'
@@ -26,14 +31,23 @@ const EditorSiteInput = () => import(
   'client/components/EditorSiteInput'
 );
 
+const SystemRoot = () => import(
+  /* webpackChunkName: "SystemRoot" */
+  'client/components/SystemRoot'
+);
+
 const globalComponents = {
   BaseButton,
   BaseBlock,
+  SystemGrid,
+  SystemRoot,
   EditorWrap,
   EditorSiteInput,
 }
 
 const allComponents = [
+  ['system-grid', 'SystemGrid'],
+  ['system-root', 'SystemRoot'],
   ['editor-wrap', 'EditorWrap'],
   ['base-button', 'BaseButton'],
   ['base-block', 'BaseBlock'],

@@ -15,6 +15,9 @@ export default {
     }
   },
   methods: {
+    isSystemTag(commonTagName) {
+      return commonTagName.includes('system-')
+    },
     getRenderedTags(tags, h) {
       const renderedTags = []
 
@@ -25,7 +28,8 @@ export default {
 
         const renderedChildren = this.getRenderedTags(children, h)
 
-        if (this.isEdit) {
+        const isSystemTag = this.isSystemTag(commonTagName)
+        if (this.isEdit && !isSystemTag) {
           renderedTags.push(
             h(
               'editor-wrap', 

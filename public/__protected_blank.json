@@ -1,11 +1,15 @@
 {
   "map": [
-    ["base-block_1", [
-      ["base-block_2", [
-        ["base-button_1"]
-      ]]
-    ]],
-    ["base-button_2"]
+    [
+      "system-root_1", [
+        ["base-block_1", [
+          ["base-block_2", [
+            ["base-button_1"]
+          ]]
+        ]],
+        ["base-button_2"]
+      ]
+    ]
   ],
   "data": {
     "base-block_1": {
@@ -39,6 +43,8 @@
   },
   "components": [
     ["base-block", "BaseBlock", 2],
-    ["base-button", "BaseButton", 2]
+    ["base-button", "BaseButton", 2],
+    ["system-grid", "SystemGrid", 0],
+    ["system-root", "SystemRoot", 1]
   ]
 }
