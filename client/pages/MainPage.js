@@ -32,10 +32,26 @@ export default {
         if (this.isEdit && !isSystemTag) {
           renderedTags.push(
             h(
-              'editor-wrap', 
-              { props: { preciseTag } }, 
-              [h(commonTagName, tagData, renderedChildren)]
-            )
+              commonTagName, 
+              {
+                ...tagData,
+                scopedSlots: {
+                  left: function (props) {
+                    return h('editor-button', { props: { preciseTag, direction: 'left' } } )
+                  },
+                  right: function (props) {
+                    return h('editor-button', { props: { preciseTag, direction: 'right' } } )
+                  },
+                  top: function (props) {
+                    return h('editor-button', { props: { preciseTag, direction: 'top' } } )
+                  },
+                  bottom: function (props) {
+                    return h('editor-button', { props: { preciseTag, direction: 'bottom' } } )
+                  }
+                }
+              }, 
+              renderedChildren
+            ),
           )
         } else {
           renderedTags.push(h(commonTagName, tagData, renderedChildren))

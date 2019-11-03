@@ -21,9 +21,9 @@ const SystemGrid = () => import(
   'client/components/SystemGrid'
 );
 
-const EditorWrap = () => import(
-  /* webpackChunkName: "EditorWrap" */
-  'client/components/EditorWrap'
+const EditorButton = () => import(
+  /* webpackChunkName: "EditorButton" */
+  'client/components/EditorButton'
 );
 
 const EditorSiteInput = () => import(
@@ -41,14 +41,14 @@ const globalComponents = {
   BaseBlock,
   SystemGrid,
   SystemRoot,
-  EditorWrap,
+  EditorButton,
   EditorSiteInput,
 }
 
 const allComponents = [
   ['system-grid', 'SystemGrid'],
   ['system-root', 'SystemRoot'],
-  ['editor-wrap', 'EditorWrap'],
+  ['editor-button', 'EditorButton'],
   ['base-button', 'BaseButton'],
   ['base-block', 'BaseBlock'],
   ['editor-site-input', 'EditorSiteInput'],
