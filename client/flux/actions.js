@@ -98,7 +98,8 @@ function wrapMapFieldInGrid(mapField, components, data) {
   };
   updateComponentData(data, componentPreciseTag, nextComponentData);
 
-  const gridComponentIndex = findComponentIndex(components, SYSTEM_GRID_COMMON_TAG_NAME);
+  const positionIndex = findComponentPositionIndexInComponents(components, SYSTEM_GRID_COMMON_TAG_NAME);
+  const { componentIndex: gridComponentIndex } = parseComponentField(components[positionIndex]);
   // create grid component
   const nextComponentIndex = gridComponentIndex + 1;
   const preciseTagName = `${SYSTEM_GRID_COMMON_TAG_NAME}_${nextComponentIndex}`;
@@ -151,13 +152,6 @@ function findComponentPositionIndexInComponents(components, commonTagName) {
   }
 
   return null;
-}
-
-function findComponentIndex(components, commonTagName) {
-  const positionIndex = findComponentPositionIndexInComponents(components, commonTagName);
-  const { componentIndex } = parseComponentField(components[positionIndex]);
-
-  return componentIndex;
 }
 
 function updateComponentIndex(components, componentPositionIndex, nextComponentIndex) {
