@@ -23,6 +23,4 @@
 <style lang="stylus" module>
   .systemGrid
     display: grid;
-    // grid-template-rows: min-content;
-    // grid-template-columns min-content
 </style>

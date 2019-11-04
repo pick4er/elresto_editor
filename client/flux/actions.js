@@ -7,18 +7,6 @@ import parsePreciseTag from 'helpers/parsePreciseTag';
 const CHILDREN_INDEX = 1;
 const SYSTEM_GRID_COMMON_TAG_NAME = 'system-grid';
 
-/*
-  "map": [
-    [
-      "base-block_1", [
-        ["base-block_2", [["base-button_2"], ["base-block_3"]]],
-        ["base-button_3"]
-      ]
-    ],
-    ["base-button_1"]
-  ],
-*/
-
 function findElementInMap(map, requiredPreciseTag, position = [0], level = 0) {
   let isFound = false;
   let isExhausted = false;
@@ -43,7 +31,7 @@ function findElementInMap(map, requiredPreciseTag, position = [0], level = 0) {
     }
 
     if ((map.length - 1) > position[level]) {
-      // current child is not we looked for, but there are some other leaves
+      // current child is not the one we looked for, but there are some other leaves too
       position[level] += 1;
     } else if ((map.length - 1) === position[level]) {
       isExhausted = true;
@@ -71,22 +59,33 @@ function sanitizePosition(position) {
   return sanitizedPosition;
 }
 
-function isGridComponent(map, preciseTag) {
-  const { preparedParentPosition: position } = getPreparedPositions(map, preciseTag)
-
+function getMapFieldOnPosition(map, position) {
   let mapField = map;
+
   for (let level = 0; level < position.length; level += 1) {
     mapField = mapField[position[level]];
-  }
+  }  
 
-  const { commonTagName } = parsePreciseTag(parseMapField(mapField).preciseTag);
+  return mapField
+}
+
+function getCommonTagNameByMapField(mapField) {
+  const { preciseTag } = parseMapField(mapField)
+  const { commonTagName } = parsePreciseTag(preciseTag)
+
+  return commonTagName
+}
+
+function isGridComponent(map, preciseTag) {
+  const { parentPosition } = getPositionsByPreciseTag(map, preciseTag)
+  const mapField = getMapFieldOnPosition(map, parentPosition)
+  const commonTagName = getCommonTagNameByMapField(mapField)
+
   return commonTagName === SYSTEM_GRID_COMMON_TAG_NAME;
 }
 
 function wrapMapFieldInGrid(mapField, components, data) {
-  const positionIndex = findComponentPositionIndexInComponents(components, SYSTEM_GRID_COMMON_TAG_NAME);
-  const { componentIndex } = parseComponentField(components[positionIndex]);
-
+  // add grid child properties to component's data
   const { preciseTag: componentPreciseTag } = parseMapField(mapField);
   const currentComponentData = data[componentPreciseTag];
   const nextComponentData = {
@@ -99,7 +98,9 @@ function wrapMapFieldInGrid(mapField, components, data) {
   };
   updateComponentData(data, componentPreciseTag, nextComponentData);
 
-  const nextComponentIndex = componentIndex + 1;
+  const gridComponentIndex = findComponentIndex(components, SYSTEM_GRID_COMMON_TAG_NAME);
+  // create grid component
+  const nextComponentIndex = gridComponentIndex + 1;
   const preciseTagName = `${SYSTEM_GRID_COMMON_TAG_NAME}_${nextComponentIndex}`;
   const nextGridComponentData = {
     props: {
@@ -107,28 +108,25 @@ function wrapMapFieldInGrid(mapField, components, data) {
       columns: 1,
     },
   };
-  updateComponentIndex(components, positionIndex, nextComponentIndex);
   updateComponentData(data, preciseTagName, nextGridComponentData);
-  const wrappedMapField = [preciseTagName, [mapField]];
+  updateComponentIndex(components, positionIndex, nextComponentIndex);
 
+  // wrap it finally
+  const wrappedMapField = [preciseTagName, [mapField]];
   return wrappedMapField;
 }
 
-function wrapInGridAndUpdatePosition(map, components, data, parentPosition, position) {
-  let parentMapField = map;
-  for (let level = 0; level < parentPosition.length; level += 1) {
-    parentMapField = parentMapField[parentPosition[level]];
-  }
+function wrapInGrid(map, components, data, preciseTag) {
+  const { position, parentPosition } = getPositionsByPreciseTag(clonedMap, preciseTag)
+
+  const parentMapField = getMapFieldOnPosition(map, parentPosition)
   const { children: parentFieldChildren } = parseMapField(parentMapField);
 
-  let mapField = map;
-  for (let level = 0; level < position.length; level += 1) {
-    mapField = mapField[position[level]];
-  }
-
-  const fieldIndexInMap = position[position.length - 1];
+  const mapField = getMapFieldOnPosition(map, position)
   const fieldInGrid = wrapMapFieldInGrid(mapField, components, data);
-  parentFieldChildren.splice(fieldIndexInMap, 1, fieldInGrid);
+
+  // every preciseTag in map is someone's child
+  parentFieldChildren.splice(position[position.length - 1], 1, fieldInGrid);
 }
 
 function addChildrenIndexesToPosition(position) {
@@ -155,6 +153,13 @@ function findComponentPositionIndexInComponents(components, commonTagName) {
   return null;
 }
 
+function findComponentIndex(components, commonTagName) {
+  const positionIndex = findComponentPositionIndexInComponents(components, commonTagName)
+  const { componentIndex } = parseComponentField(components[positionIndex])
+
+  return componentIndex
+}
+
 function updateComponentIndex(components, componentPositionIndex, nextComponentIndex) {
   components[componentPositionIndex][2] = nextComponentIndex;
 }
@@ -175,7 +180,9 @@ function getComponentRowAndColumn(data, preciseTag) {
   return { row, column };
 }
 
-function updateGridRowsAndColumns(data, preciseGridTag, maxColumn, maxRow) {
+function updateGridRowsAndColumns(data, preciseGridTag, gridChildren) {
+  const { maxColumn, maxRow } = getMaxColumnAndRow(data, gridChildren)
+
   const currentGridData = data[preciseGridTag];
   const nextGridData = {
     ...currentGridData,
@@ -275,35 +282,27 @@ function createBlockRowAndColumnByDirection(direction, centerRow, centerColumn) 
     row = centerRow;
   }
 
+  // keep it in the grid boundaries
   if (row < 1) row = 1
   if (column < 1) column = 1
 
   return { row, column };
 }
 
-function insertIntoMapWithPreparedPosition(direction, map, components, data, parentPosition, position) {
-  let gridMapField = map;
-  for (let i = 0; i < parentPosition.length; i += 1) {
-    gridMapField = gridMapField[parentPosition[i]];
-  }
+function insertIntoMap(direction, map, components, data, preciseTag) {
+  const { position, parentPosition } = getPositionsByPreciseTag(map, preciseTag)
 
-  let mapField = map;
-  for (let i = 0; i < position.length; i += 1) {
-    mapField = mapField[position[i]];
-  }
-
-  const componentPositionIndex = findComponentPositionIndexInComponents(components, 'base-block');
-  const { componentIndex } = parseComponentField(components[componentPositionIndex]);
-
-  const { preciseTag } = parseMapField(mapField);
+  const gridMapField = getMapFieldOnPosition(map, parentPosition)
   const { preciseTag: preciseGridTag, children: gridChildren } = parseMapField(gridMapField);
 
   const { row: centerRow, column: centerColumn } = getComponentRowAndColumn(data, preciseTag);
-
   const { row: newComponentRow, column: newComponentColumn } = createBlockRowAndColumnByDirection(direction, centerRow, centerColumn);
   shiftGridComponentsPositions(direction, data, gridChildren, newComponentRow, newComponentColumn);
-  const { maxColumn, maxRow } = getMaxColumnAndRow(data, gridChildren)
-  updateGridRowsAndColumns(data, preciseGridTag, maxColumn, maxRow);
+  updateGridRowsAndColumns(data, preciseGridTag, gridChildren);
+
+  // create new component block
+  const componentPositionIndex = findComponentPositionIndexInComponents(components, 'base-block')
+  const { componentIndex } = parseComponentField(components[componentPositionIndex])
 
   const newComponentIndex = componentIndex + 1;
   const newPreciseTag = `base-block_${newComponentIndex}`;
@@ -320,18 +319,27 @@ function insertIntoMapWithPreparedPosition(direction, map, components, data, par
   updateComponentData(data, newPreciseTag, newComponentData);
   updateComponentIndex(components, componentPositionIndex, newComponentIndex);
 
-  const lastPositionLevel = position.length - 1;
-  gridChildren.splice(position[lastPositionLevel] + 1, 0, [newPreciseTag]);
+  gridChildren.splice(position[position.length - 1] + 1, 0, [newPreciseTag]);
 }
 
-function getPreparedPositions(map, preciseTag) {
+function getPositionsByPreciseTag(map, preciseTag) {
   const { position } = findElementInMap(map, preciseTag);
 
   const sanitizedPosition = sanitizePosition(position);
   const preparedPosition = addChildrenIndexesToPosition(sanitizedPosition);
   const preparedParentPosition = addChildrenIndexesToPosition(getComponentParentPosition(sanitizedPosition));
 
-  return { preparedPosition, preparedParentPosition }
+  return { position: preparedPosition, parentPosition: preparedParentPosition }
+}
+
+function deepCloneSiteFields(state) {
+  const { map: rawMap, components: rawComponents, data: rawData } = state
+
+  const map = JSON.parse(JSON.stringify(rawMap));
+  const components = JSON.parse(JSON.stringify(rawComponents));
+  const data = JSON.parse(JSON.stringify(rawData));
+
+  return { map, components, data }
 }
 
 export default {
@@ -407,33 +415,21 @@ export default {
     });
   },
 
-  ADD_BLOCK(context, { direction, preciseTag }) {
-    const {
-      commit,
-      state: {
-        map,
-        data,
-        components,
-      },
-    } = context;
+  ADD_BLOCK({ commit, state }, { direction, preciseTag }) {
+    const { map, components, data } = deepCloneSiteFields(state)
 
-    const clonedMap = JSON.parse(JSON.stringify(map));
-    const clonedComponents = JSON.parse(JSON.stringify(components));
-    const clonedData = JSON.parse(JSON.stringify(data));
-
-    if (!isGridComponent(clonedMap, preciseTag)) {
-      const { preparedPosition, preparedParentPosition } = getPreparedPositions(clonedMap, preciseTag)
-      wrapInGridAndUpdatePosition(clonedMap, clonedComponents, clonedData, preparedParentPosition, preparedPosition);
+    if (!isGridComponent(map, preciseTag)) {
+      // grid allows to position elements on each side of preciseTag
+      wrapInGrid(map, components, data, preciseTag);
     }
 
-    const { preparedPosition, preparedParentPosition } = getPreparedPositions(clonedMap, preciseTag)
-    insertIntoMapWithPreparedPosition(direction, clonedMap, clonedComponents, clonedData, preparedParentPosition, preparedPosition);
+    insertIntoMap(direction, map, components, data, preciseTag);
 
     commit({
       type: 'UPDATE_SITE',
-      map: clonedMap,
-      data: clonedData,
-      components: clonedComponents,
+      map,
+      data,
+      components,
     });
   },
 };
