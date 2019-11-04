@@ -64,22 +64,22 @@ function getMapFieldOnPosition(map, position) {
 
   for (let level = 0; level < position.length; level += 1) {
     mapField = mapField[position[level]];
-  }  
+  }
 
-  return mapField
+  return mapField;
 }
 
 function getCommonTagNameByMapField(mapField) {
-  const { preciseTag } = parseMapField(mapField)
-  const { commonTagName } = parsePreciseTag(preciseTag)
+  const { preciseTag } = parseMapField(mapField);
+  const { commonTagName } = parsePreciseTag(preciseTag);
 
-  return commonTagName
+  return commonTagName;
 }
 
 function isGridComponent(map, preciseTag) {
-  const { parentPosition } = getPositionsByPreciseTag(map, preciseTag)
-  const mapField = getMapFieldOnPosition(map, parentPosition)
-  const commonTagName = getCommonTagNameByMapField(mapField)
+  const { parentPosition } = getPositionsByPreciseTag(map, preciseTag);
+  const mapField = getMapFieldOnPosition(map, parentPosition);
+  const commonTagName = getCommonTagNameByMapField(mapField);
 
   return commonTagName === SYSTEM_GRID_COMMON_TAG_NAME;
 }
@@ -117,12 +117,12 @@ function wrapMapFieldInGrid(mapField, components, data) {
 }
 
 function wrapInGrid(map, components, data, preciseTag) {
-  const { position, parentPosition } = getPositionsByPreciseTag(clonedMap, preciseTag)
+  const { position, parentPosition } = getPositionsByPreciseTag(clonedMap, preciseTag);
 
-  const parentMapField = getMapFieldOnPosition(map, parentPosition)
+  const parentMapField = getMapFieldOnPosition(map, parentPosition);
   const { children: parentFieldChildren } = parseMapField(parentMapField);
 
-  const mapField = getMapFieldOnPosition(map, position)
+  const mapField = getMapFieldOnPosition(map, position);
   const fieldInGrid = wrapMapFieldInGrid(mapField, components, data);
 
   // every preciseTag in map is someone's child
@@ -154,10 +154,10 @@ function findComponentPositionIndexInComponents(components, commonTagName) {
 }
 
 function findComponentIndex(components, commonTagName) {
-  const positionIndex = findComponentPositionIndexInComponents(components, commonTagName)
-  const { componentIndex } = parseComponentField(components[positionIndex])
+  const positionIndex = findComponentPositionIndexInComponents(components, commonTagName);
+  const { componentIndex } = parseComponentField(components[positionIndex]);
 
-  return componentIndex
+  return componentIndex;
 }
 
 function updateComponentIndex(components, componentPositionIndex, nextComponentIndex) {
@@ -181,7 +181,7 @@ function getComponentRowAndColumn(data, preciseTag) {
 }
 
 function updateGridRowsAndColumns(data, preciseGridTag, gridChildren) {
-  const { maxColumn, maxRow } = getMaxColumnAndRow(data, gridChildren)
+  const { maxColumn, maxRow } = getMaxColumnAndRow(data, gridChildren);
 
   const currentGridData = data[preciseGridTag];
   const nextGridData = {
@@ -197,45 +197,45 @@ function updateGridRowsAndColumns(data, preciseGridTag, gridChildren) {
 }
 
 function defineByCoordsIsPositionBusy(data, children, row, column) {
-  let isBusy = false
+  let isBusy = false;
   for (let i = 0; i < children.length; i += 1) {
-    const childMapField = children[i]
-    const { preciseTag } = parseMapField(childMapField)
-    const { row: currentRow, column: currentColumn } = getComponentRowAndColumn(data, preciseTag)
+    const childMapField = children[i];
+    const { preciseTag } = parseMapField(childMapField);
+    const { row: currentRow, column: currentColumn } = getComponentRowAndColumn(data, preciseTag);
 
     if (currentRow === row && currentColumn === column) {
-      isBusy = true
-      break
+      isBusy = true;
+      break;
     }
   }
 
-  return isBusy
+  return isBusy;
 }
 
 function getMaxColumnAndRow(data, children) {
-  let maxRow = 0
-  let maxColumn = 0
+  let maxRow = 0;
+  let maxColumn = 0;
   for (let i = 0; i < children.length; i += 1) {
-    const childMapField = children[i]
-    const { preciseTag } = parseMapField(childMapField)
-    const { row: currentRow, column: currentColumn } = getComponentRowAndColumn(data, preciseTag)
+    const childMapField = children[i];
+    const { preciseTag } = parseMapField(childMapField);
+    const { row: currentRow, column: currentColumn } = getComponentRowAndColumn(data, preciseTag);
 
     if (currentRow > maxRow) {
-      maxRow = currentRow
+      maxRow = currentRow;
     }
 
     if (currentColumn > maxColumn) {
-      maxColumn = currentColumn
+      maxColumn = currentColumn;
     }
   }
 
-  return { maxRow, maxColumn }
+  return { maxRow, maxColumn };
 }
 
 function shiftGridComponentsPositions(direction, data, gridChildren, newComponentRow, newComponentColumn) {
   const isPositionBusy = defineByCoordsIsPositionBusy(data, gridChildren, newComponentRow, newComponentColumn);
   if (!isPositionBusy) {
-    return
+    return;
   }
 
   for (let i = 0; i < gridChildren.length; i++) {
@@ -283,16 +283,16 @@ function createBlockRowAndColumnByDirection(direction, centerRow, centerColumn) 
   }
 
   // keep it in the grid boundaries
-  if (row < 1) row = 1
-  if (column < 1) column = 1
+  if (row < 1) row = 1;
+  if (column < 1) column = 1;
 
   return { row, column };
 }
 
 function insertIntoMap(direction, map, components, data, preciseTag) {
-  const { position, parentPosition } = getPositionsByPreciseTag(map, preciseTag)
+  const { position, parentPosition } = getPositionsByPreciseTag(map, preciseTag);
 
-  const gridMapField = getMapFieldOnPosition(map, parentPosition)
+  const gridMapField = getMapFieldOnPosition(map, parentPosition);
   const { preciseTag: preciseGridTag, children: gridChildren } = parseMapField(gridMapField);
 
   const { row: centerRow, column: centerColumn } = getComponentRowAndColumn(data, preciseTag);
@@ -301,8 +301,8 @@ function insertIntoMap(direction, map, components, data, preciseTag) {
   updateGridRowsAndColumns(data, preciseGridTag, gridChildren);
 
   // create new component block
-  const componentPositionIndex = findComponentPositionIndexInComponents(components, 'base-block')
-  const { componentIndex } = parseComponentField(components[componentPositionIndex])
+  const componentPositionIndex = findComponentPositionIndexInComponents(components, 'base-block');
+  const { componentIndex } = parseComponentField(components[componentPositionIndex]);
 
   const newComponentIndex = componentIndex + 1;
   const newPreciseTag = `base-block_${newComponentIndex}`;
@@ -329,17 +329,17 @@ function getPositionsByPreciseTag(map, preciseTag) {
   const preparedPosition = addChildrenIndexesToPosition(sanitizedPosition);
   const preparedParentPosition = addChildrenIndexesToPosition(getComponentParentPosition(sanitizedPosition));
 
-  return { position: preparedPosition, parentPosition: preparedParentPosition }
+  return { position: preparedPosition, parentPosition: preparedParentPosition };
 }
 
 function deepCloneSiteFields(state) {
-  const { map: rawMap, components: rawComponents, data: rawData } = state
+  const { map: rawMap, components: rawComponents, data: rawData } = state;
 
   const map = JSON.parse(JSON.stringify(rawMap));
   const components = JSON.parse(JSON.stringify(rawComponents));
   const data = JSON.parse(JSON.stringify(rawData));
 
-  return { map, components, data }
+  return { map, components, data };
 }
 
 export default {
@@ -416,7 +416,7 @@ export default {
   },
 
   ADD_BLOCK({ commit, state }, { direction, preciseTag }) {
-    const { map, components, data } = deepCloneSiteFields(state)
+    const { map, components, data } = deepCloneSiteFields(state);
 
     if (!isGridComponent(map, preciseTag)) {
       // grid allows to position elements on each side of preciseTag
